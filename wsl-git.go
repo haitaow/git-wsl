@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -32,9 +33,15 @@ func main() {
 		panic(err)
 	}
 
-	// TODO: translate path in args if needed.
 	gitArgs := os.Args[1:]
 	gitArgs = append([]string{"git"}, gitArgs...)
+	for i, arg := range gitArgs {
+		if len(arg) >= 3 && arg[1] == ':' && arg[2] == '\\' {
+			gitArgs[i] = fmt.Sprintf("/mnt/%s/%s", strings.ToLower(arg[:1]), strings.ReplaceAll(arg[3:], "\\", "/"))
+		}
+		// TODO: translate other paths in args if needed.
+	}
+
 	cmd := exec.Command("wsl", gitArgs...)
 	if _, err = f.WriteString(cmd.String() + "\n"); err != nil {
 		panic(err)

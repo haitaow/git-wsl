@@ -11,8 +11,7 @@ which is fast.
 Temporary steps for SourceTree integration
 
 * Warning:
-  * The current version will log all git commands passed through. Clear log file once in a while may be a good idea.
-  * Windows paths in arguments are not translated to Linux paths yet. Some git commands may fail. Frequently used
+  * Some Windows paths in arguments are not translated to Linux paths yet. Some git commands may fail. Frequently used
     features in SourceTree seemed OK so far. If something is not working as expected, please inspect the log file.
     Please report issues (or you can try to fix it yourself :) ).
 * download wsl-git.exe, or "go build wsl-git.go".

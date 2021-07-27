@@ -1,0 +1,23 @@
+{
+  "LogAll": false,
+  "IgnoreErrors": [
+    {
+      "ExitCode": 1,
+      "EmptyStdErr": true,
+      "GitCommand": "config"
+    },
+    {
+      "ExitCode": 1,
+      "StdErrPhrases": [
+        "is not a git command",
+        "lfs"
+      ],
+      "GitCommand": "lfs"
+    },
+    {
+      "ExitCode": 11,
+      "EmptyStdErr": true,
+      "GitCommand": ""
+    }
+  ]
+}

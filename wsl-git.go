@@ -11,10 +11,27 @@ import (
 )
 
 type IgnoreError struct {
+	GitCommand    string
 	ExitCode      int
 	EmptyStdErr   bool
-	StdErrPhrases []string
-	GitCommand    string
+	StdErrPhrases []string // ignored when EmptyStdErr is true
+}
+
+// UnmarshalJSON always sets default values of IgnoreError, even when un-marshaled as list element in Config.
+// Without this the fields of Config.IgnoreErrors unspecified in json will take the values of the corresponding
+// element in the default Config.IgnoreErrors value which can be unexpected.
+func (t *IgnoreError) UnmarshalJSON(data []byte) error {
+	type alias IgnoreError // prevent recursive calls to UnmarshalJSON
+	v := alias{
+		GitCommand:    "",
+		ExitCode:      0,
+		EmptyStdErr:   false,
+		StdErrPhrases: []string{},
+	}
+
+	err := json.Unmarshal(data, &v)
+	*t = IgnoreError(v)
+	return err
 }
 
 type Config struct {
@@ -35,6 +52,11 @@ func getConfig(configFile string) Config {
 				GitCommand:    "lfs",
 				ExitCode:      1,
 				StdErrPhrases: []string{"is not a git command", "lfs"},
+			},
+			{
+				GitCommand:    "flow",
+				ExitCode:      1,
+				StdErrPhrases: []string{"is not a git command", "flow"},
 			},
 			{
 				GitCommand:  "",
@@ -98,13 +120,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	cmdInfo += fmt.Sprintln("Working dir: ", workingDir, " err: ", err)
+	cmdInfo += fmt.Sprintln("Working dir: ", workingDir)
 	executable, err := os.Executable()
-	cmdInfo += fmt.Sprintln("Executable: ", executable, " err: ", err)
+	if err != nil {
+		panic(err)
+	}
+	//cmdInfo += fmt.Sprintln("Executable: ", executable)
+
 	logFile := filepath.Join(filepath.Dir(executable), "wsl-git.log")
 	errFile := filepath.Join(filepath.Dir(executable), "wsl-git.err")
 	configFile := filepath.Join(filepath.Dir(executable), "wsl-git.json")
-	cmdInfo += fmt.Sprintln("Log file: ", logFile)
 
 	// gitArgs are translated args that will be sent to git in wsl
 	gitArgs := append([]string{"git"}, os.Args[1:]...)
@@ -120,7 +145,7 @@ func main() {
 
 		// TODO: translate other paths in args if needed.
 	}
-	cmdInfo += fmt.Sprintf("gitArgs=%v\n", gitArgs)
+	//cmdInfo += fmt.Sprintf("gitArgs=%v\n", gitArgs)
 
 	cmd := exec.Command("wsl", gitArgs...)
 	cmdInfo += cmd.String() + "\n"

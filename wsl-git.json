@@ -2,22 +2,30 @@
   "LogAll": false,
   "IgnoreErrors": [
     {
+      "GitCommand": "config",
       "ExitCode": 1,
-      "EmptyStdErr": true,
-      "GitCommand": "config"
+      "EmptyStdErr": true
     },
     {
+      "GitCommand": "lfs",
       "ExitCode": 1,
       "StdErrPhrases": [
         "is not a git command",
         "lfs"
-      ],
-      "GitCommand": "lfs"
+      ]
     },
     {
+      "GitCommand": "flow",
+      "ExitCode": 1,
+      "StdErrPhrases": [
+        "is not a git command",
+        "flow"
+      ]
+    },
+    {
+      "GitCommand": "",
       "ExitCode": 11,
-      "EmptyStdErr": true,
-      "GitCommand": ""
+      "EmptyStdErr": true
     }
   ]
 }

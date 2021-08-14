@@ -7,6 +7,11 @@
       "EmptyStdErr": true
     },
     {
+      "GitCommand": "config",
+      "ExitCode": 5,
+      "EmptyStdErr": true
+    },
+    {
       "GitCommand": "lfs",
       "ExitCode": 1,
       "StdErrPhrases": [
@@ -26,6 +31,69 @@
       "GitCommand": "",
       "ExitCode": 11,
       "EmptyStdErr": true
+    },
+    {
+      "GitCommand": "rebase",
+      "ExitCode": 1,
+      "StdErrPhrases": [
+        "Failed to merge in the changes",
+        "Use 'git am --show-current-patch' to see the failed patch"
+      ]
+    },
+    {
+      "GitCommand": "rebase",
+      "ExitCode": 1,
+      "StdErrPhrases": [
+        "cannot rebase: You have unstaged changes",
+        "Please commit or stash them"
+      ]
+    },
+    {
+      "GitCommand": "branch",
+      "ExitCode": 1,
+      "StdErrPhrases": [
+        "is not fully merged",
+        "If you are sure you want to delete it, run 'git branch -D"
+      ]
+    },
+    {
+      "GitCommand": "fetch",
+      "ExitCode": 255,
+      "StdErrPhrases": [
+        "cannot open .git/FETCH_HEAD: Permission denied"
+      ]
+    },
+    {
+      "GitCommand": "fetch",
+      "ExitCode": 128,
+      "StdErrPhrases": [
+        "Could not resolve hostname",
+        "Name or service not known"
+      ]
+    },
+    {
+      "GitCommand": "fetch",
+      "ExitCode": 128,
+      "StdErrPhrases": [
+        "Connection refused",
+        "Could not read from remote repository"
+      ]
+    },
+    {
+      "GitCommand": "fetch",
+      "ExitCode": 128,
+      "StdErrPhrases": [
+        "Connection closed by remote host",
+        "Could not read from remote repository"
+      ]
+    },
+    {
+      "GitCommand": "fetch",
+      "ExitCode": 128,
+      "StdErrPhrases": [
+        "Connection timed out",
+        "Could not read from remote repository"
+      ]
     }
   ]
 }

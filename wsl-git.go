@@ -63,6 +63,11 @@ func getConfig(configFile string) Config {
 				ExitCode:    11,
 				EmptyStdErr: true,
 			},
+			{
+				GitCommand:    "fetch",
+				ExitCode:      255,
+				StdErrPhrases: []string{"cannot open .git/FETCH_HEAD: Permission denied"},
+			},
 		},
 	}
 

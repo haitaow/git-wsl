@@ -9,32 +9,44 @@ which is fast.
 *It's still a work-in-progress and under testing. After it stabilizes, usage steps will be updated.*
 
 * Warning:
-  * Some Windows paths in arguments are not translated to Linux paths yet. Some git commands may fail. Frequently used
-    features in SourceTree seemed OK so far. If something is not working as expected, please inspect the log file.
-    Please report issues (or you can try to fix it yourself :) ).
+    * Some Windows paths in arguments are not translated to Linux paths yet. Some git commands may fail. Frequently used
+      features in SourceTree seemed OK so far. If something is not working as expected, please inspect the log file.
+      Please report issues (or you can try to fix it yourself :) ).
 
-## Installation
+## Get files
 
 * From binary
-  * download wsl-git.zip
-  * First time install: extract to a folder and fun install.bat as administrator
-  * Update option 1: same as first time install but run as administrator is not required
-  * Update option 2: just copy the files in the zip folder to the existing installation folder
+    * download wsl-git.zip
+    * extract to some-dir
+    * cd some-dir
 * From source
-  * git clone
-  * go build wsl-git.go
-  * (optional) copy wsl-git.exe to another location when playing around the source code.
-  * go to a desired directory, e.g. \Users\username\bin,
-  * mklink git.exe wsl-git.exe
-  * a default json config file will be generated the first time wsl-git.exe is executed.
-  * log will be written to the same directory as wsl-git.exe, so ensure it has write permission.
+    * git clone
+    * cd wsl-git
+    * go build wsl-git.go
 
 ## SourceTree integration
 
-* In SourceTree, go to Tools | Options, then Git tab, Git Version section
-* Click "Embedded" if it's not grayed out
-* Click "Clear path cache" if it's not grayed out
-* Click "System", and browse to the git.exe symbolic link created above
-* (optional, recommended) clear "Disable LibGit2 integration"
-* Click OK
-* Restart SourceTree
+* Note: by default install-SourceTree.bat only works with the embedded version of git in SourceTree, i.e. in the above
+  options section, "Embedded" should be used. If "Update Embedded" is clicked, ./install-SourceTree.bat needs to be
+  re-run.  If using another version is desired, set GIT_DIR before the next step. 
+* Note: the next step will backup the original git.exe to win-git.exe and replace it.  If win-git.exe already exists,
+  it will not be overwritten, so re-run is safe. 
+* ./install-SourceTree.bat
+* (optional, recommended) In SourceTree, go to Tools | Options, then Git tab, Git Version section, clear "Disable
+  LibGit2 integration".
+
+## Standalone install (not required for SourceTree integration)
+
+* First time install: run ./install-standalone.bat as administrator
+* Update option 1: same as first time install but run as administrator is not required
+* Update option 2: just copy the files in the zip folder to the existing installation folder
+
+## Notes
+
+* If a json config file is not found in the same directory as the binary, a default one will be generated the first time
+  wsl-git.exe is executed,
+* Log(s) will be written to the same directory as wsl-git.exe, so ensure it has write permission.
+* By default, any git command exited with error will be logged, unless it's a known error to be skipped. Add to
+  IgnoreErrors section in the json config file if needed. Some common errors are already included in the default config
+  file, and can be removed if desired.
+* Setting LogAll to true in the config file will log all git commands regardless of success or error.  

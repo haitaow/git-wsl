@@ -1,5 +1,6 @@
 {
   "LogAll": false,
+  "WindowsGit-example": "C:\\Users\\UserName\\AppData\\Local\\Atlassian\\SourceTree\\git_local\\mingw32\\bin\\win-git.exe",
   "IgnoreErrors": [
     {
       "GitCommand": "config",

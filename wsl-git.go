@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -36,12 +38,14 @@ func (t *IgnoreError) UnmarshalJSON(data []byte) error {
 
 type Config struct {
 	LogAll       bool
+	WindowsGit   string
 	IgnoreErrors []IgnoreError
 }
 
 func getConfig(configFile string) Config {
 	config := Config{
-		LogAll: false,
+		LogAll:     false,
+		WindowsGit: "",
 		IgnoreErrors: []IgnoreError{
 			{
 				GitCommand:  "config",
@@ -135,35 +139,44 @@ func main() {
 	logFile := filepath.Join(filepath.Dir(executable), "wsl-git.log")
 	errFile := filepath.Join(filepath.Dir(executable), "wsl-git.err")
 	configFile := filepath.Join(filepath.Dir(executable), "wsl-git.json")
-
-	// gitArgs are translated args that will be sent to git in wsl
-	gitArgs := append([]string{"git"}, os.Args[1:]...)
-	for i, arg := range gitArgs {
-		if len(arg) >= 3 && arg[1] == ':' && arg[2] == '\\' {
-			gitArgs[i] = fmt.Sprintf("/mnt/%s/%s", strings.ToLower(arg[:1]), strings.ReplaceAll(arg[3:], "\\", "/"))
+	config := getConfig(configFile)
+	windowsGit := config.WindowsGit
+	if len(windowsGit) == 0 {
+		findWindowsGit := filepath.Join(filepath.Dir(executable), "win-git.exe")
+		if _, err := os.Stat(findWindowsGit); err == nil || !errors.Is(err, fs.ErrNotExist) {
+			windowsGit = findWindowsGit
 		}
-
-		const wslPathPrefix = `\\wsl$\Ubuntu`
-		if strings.HasPrefix(arg, wslPathPrefix) {
-			gitArgs[i] = strings.ReplaceAll(arg[len(wslPathPrefix):], `\`, "/")
-		}
-
-		// TODO: translate other paths in args if needed.
 	}
-	//cmdInfo += fmt.Sprintf("gitArgs=%v\n", gitArgs)
 
-	cmd := exec.Command("wsl", gitArgs...)
+	const wslPathPrefix = `\\wsl$\Ubuntu`
+	gitArgs := os.Args[1:]
+	cmd := exec.Command(windowsGit, gitArgs...)
+	if len(windowsGit) == 0 || strings.HasPrefix(workingDir, wslPathPrefix) {
+		// gitArgs are translated args that will be sent to git in wsl
+		gitArgs = append([]string{"git"}, os.Args[1:]...)
+		for i, arg := range gitArgs {
+			if len(arg) >= 3 && arg[1] == ':' && arg[2] == '\\' {
+				gitArgs[i] = fmt.Sprintf("/mnt/%s/%s", strings.ToLower(arg[:1]), strings.ReplaceAll(arg[3:], "\\", "/"))
+			}
+
+			if strings.HasPrefix(arg, wslPathPrefix) {
+				gitArgs[i] = strings.ReplaceAll(arg[len(wslPathPrefix):], `\`, "/")
+			}
+
+			// TODO: translate other paths in args if needed.
+		}
+		//cmdInfo += fmt.Sprintf("gitArgs=%v\n", gitArgs)
+		cmd = exec.Command("wsl", gitArgs...)
+	}
 	cmdInfo += cmd.String() + "\n"
 
 	var log *os.File
-	var config Config
 	defer func() {
 		if err != nil {
 			reportError(err, errFile, gitArgs, cmdInfo, log, config)
 		}
 	}()
 
-	config = getConfig(configFile)
 	if config.LogAll {
 		if log, err = os.OpenFile(logFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600); err != nil {
 			return

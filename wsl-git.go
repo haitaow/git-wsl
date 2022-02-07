@@ -148,7 +148,7 @@ func main() {
 		}
 	}
 
-	const wslPathPrefix = `\\wsl$\Ubuntu`
+	const wslPathPrefix = `\\wsl`
 	gitArgs := os.Args[1:]
 	cmd := exec.Command(windowsGit, gitArgs...)
 	if len(windowsGit) == 0 || strings.HasPrefix(workingDir, wslPathPrefix) {

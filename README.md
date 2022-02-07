@@ -8,6 +8,9 @@ which is fast.
 
 *It's still a work-in-progress and under testing. After it stabilizes, usage steps will be updated.*
 
+It forward the git command to the default distro of wsl at this time.  Run "wsl -l" to verify your default distro, and
+run "wsl git version" in Windows PowerShell or cmd window to verify you have git installed in the default distro.
+
 * Warning:
     * Some Windows paths in arguments are not translated to Linux paths yet. Some git commands may fail. Frequently used
       features in SourceTree seemed OK so far. If something is not working as expected, please inspect the log file.
